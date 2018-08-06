@@ -1,31 +1,26 @@
 package de.adorsys.example.generic;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
-public class Objects<T> implements List<T> {
+public class MyArrayList<T> implements List<T> {
 
-    private T[] objects = (T[])new Object[1];
+    private T[] array = (T[]) new Object[1];
     private int size = 0;
 
     public T get(int index) {
-        return objects[index];
+        return array[index];
     }
 
     public T set(int index, T s) {
-        if(index > objects.length - 1) {
-            T[] newObjects = (T[])new Object[objects.length * 8];
+        if (index > array.length - 1) {
+            T[] copiedArray = (T[]) new Object[array.length * 8];
 
-            for(int i = 0; i < objects.length; i++) {
-                newObjects[i] = objects[i];
-            }
+            System.arraycopy(array, 0, copiedArray, 0, array.length);
 
-            objects = newObjects;
+            array = copiedArray;
         }
 
-        objects[index] = s;
+        array[index] = s;
         return s;
     }
 
@@ -38,11 +33,21 @@ public class Objects<T> implements List<T> {
     }
 
     public int indexOf(Object o) {
-        return 0;
+        for(int i = 0; i < size; i++){
+            if(Objects.equals(array[i], o)){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public int lastIndexOf(Object o) {
-        return 0;
+        for(int i = size-1; i >= 0; i--){
+            if(Objects.equals(array[i], o)){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public ListIterator<T> listIterator() {
@@ -58,14 +63,19 @@ public class Objects<T> implements List<T> {
     }
 
     public int size() {
-        return 0;
+        return size;
     }
 
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     public boolean contains(Object o) {
+        for (int i = 0; i < size; i++) {
+            if(Objects.equals(array[i], o)) {
+                return true;
+            }
+        }
         return false;
     }
 
