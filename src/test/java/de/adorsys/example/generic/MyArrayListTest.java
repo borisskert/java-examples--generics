@@ -5,6 +5,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -278,5 +281,220 @@ public class MyArrayListTest {
         for(Integer counter = 0; counter < 1000000000; counter++) {
             list.add(counter.toString());
         }
+    }
+
+    @Test
+    public void shouldContainAllElementsWhenNoElementExists() throws Exception {
+        List<String> otherList = new ArrayList<>();
+        assertThat(list.containsAll(otherList), is(equalTo(true)));
+
+    }
+
+    @Test
+    public void shouldNotContainAllElementsWhenElementsDiffer() throws Exception {
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        assertThat(list.containsAll(otherList), is(equalTo(false)));
+    }
+
+    @Test
+    public void shouldContainAllElementsWhenListsContainingSameElement() throws Exception {
+        list.add("abc");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        assertThat(list.containsAll(otherList), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldContainAllElementsWhenListsContainingOneElement() throws Exception {
+        list.add("abc");
+        list.add("xyz");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        assertThat(list.containsAll(otherList), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldContainAllElementsWhenListsContainingSameElements() throws Exception {
+        list.add("abc");
+        list.add("xyz");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        otherList.add("xyz");
+        assertThat(list.containsAll(otherList), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldAddAllElementFromCollection() throws Exception {
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        list.addAll(otherList);
+        assertThat(list.addAll(otherList), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldAddAllThreeElementsFromCollection() throws Exception {
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        otherList.add("def");
+        otherList.add("xyz");
+        list.addAll(otherList);
+        assertThat(list.addAll(otherList), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldAddAllElementFromCollectionAtIndex() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        list.addAll(2, otherList);
+        assertThat(list.addAll(otherList), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldAddAllElementsFromCollectionAtIndexZero() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("xyz");
+        list.addAll(0, otherList);
+
+        assertThat(list.indexOf("xyz"), is(equalTo(0)));
+        assertThat(list.indexOf("abc"), is(equalTo(1)));
+        assertThat(list.indexOf("def"), is(equalTo(2)));
+        assertThat(list.indexOf("ghi"), is(equalTo(3)));
+    }
+
+    @Test
+    public void shouldAddAllTwoElementsFromCollectionAtIndexZero() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("xyz");
+        otherList.add("123");
+        list.addAll(0, otherList);
+
+        assertThat(list.indexOf("xyz"), is(equalTo(0)));
+        assertThat(list.indexOf("123"), is(equalTo(1)));
+        assertThat(list.indexOf("abc"), is(equalTo(2)));
+        assertThat(list.indexOf("def"), is(equalTo(3)));
+        assertThat(list.indexOf("ghi"), is(equalTo(4)));
+    }
+
+    @Test
+    public void shouldAddAllElementsFromCollectionAtIndexTwo() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("xyz");
+        list.addAll(2, otherList);
+
+        assertThat(list.indexOf("abc"), is(equalTo(0)));
+        assertThat(list.indexOf("def"), is(equalTo(1)));
+        assertThat(list.indexOf("xyz"), is(equalTo(2)));
+        assertThat(list.indexOf("ghi"), is(equalTo(3)));
+    }
+
+    @Test
+    public void shouldAddAllElementsFromCollectionAtIndexThree() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("xyz");
+        list.addAll(3, otherList);
+
+        assertThat(list.indexOf("abc"), is(equalTo(0)));
+        assertThat(list.indexOf("def"), is(equalTo(1)));
+        assertThat(list.indexOf("ghi"), is(equalTo(2)));
+        assertThat(list.indexOf("xyz"), is(equalTo(3)));
+    }
+
+    @Test
+    public void shouldNotAddAllElementsFromCollectionWithNegativeIndex() throws Exception {
+        List<String> otherList = new ArrayList<>();
+        otherList.add("xyz");
+
+        try {
+            list.addAll(-1, otherList);
+        } catch(IndexOutOfBoundsException e) {
+            return;
+        }
+
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
+
+    @Test
+    public void shouldNotAddAllElementsFromCollectionWithIndexAboveRange() throws Exception {
+        List<String> otherList = new ArrayList<>();
+        otherList.add("xyz");
+
+        try {
+            list.addAll(1, otherList);
+        } catch(IndexOutOfBoundsException e) {
+            return;
+        }
+
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
+
+    @Test
+    public void shouldNotRemoveElementFromCollection() throws Exception {
+        list.add("abc");
+        list.remove("xyz");
+        assertThat(list.remove("xyz"), is(equalTo(false)));
+    }
+
+    @Test
+    public void shouldRemoveElementFromCollection() throws Exception {
+        list.add("abc");
+        list.remove("abc");
+        assertThat(list.remove("abc"), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldRemoveElementFromLongerCollection() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("xyz");
+        list.add("abc");
+        list.add("def");
+        list.remove("def");
+        assertThat(list.remove("def"), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldRemoveAllElementsFromCollection() throws Exception {
+        list.add("abc");
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        list.removeAll(otherList);
+        assertThat(list.removeAll(otherList), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldRemoveAllElementsFromLongerCollection() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+        list.add("abc");
+        list.add("xyz");
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        otherList.add("xyz");
+        list.removeAll(otherList);
+        assertThat(list.removeAll(otherList), is(equalTo(true)));
     }
 }

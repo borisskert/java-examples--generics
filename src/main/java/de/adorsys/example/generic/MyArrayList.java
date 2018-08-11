@@ -12,7 +12,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public T set(int index, T s) {
-        if(index < 0 || index >= size){
+        if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -28,8 +28,8 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public int indexOf(Object o) {
-        for(int i = 0; i < size; i++){
-            if(Objects.equals(array[i], o)){
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(array[i], o)) {
                 return i;
             }
         }
@@ -37,8 +37,8 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public int lastIndexOf(Object o) {
-        for(int i = size-1; i >= 0; i--){
-            if(Objects.equals(array[i], o)){
+        for (int i = size - 1; i >= 0; i--) {
+            if (Objects.equals(array[i], o)) {
                 return i;
             }
         }
@@ -67,7 +67,7 @@ public class MyArrayList<T> implements List<T> {
 
     public boolean contains(Object o) {
         for (int i = 0; i < size; i++) {
-            if(Objects.equals(array[i], o)) {
+            if (Objects.equals(array[i], o)) {
                 return true;
             }
         }
@@ -94,26 +94,66 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public boolean remove(Object o) {
+        for (int i = 0; i < size; i++) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        size--;
+        return true;
+    }
+
+    public boolean containsAll(Collection<?> otherCollection) {
+        for (Object currentElementOfOtherCollection : otherCollection) {
+            if (!contains(currentElementOfOtherCollection)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean addAll(int index, Collection<? extends T> otherCollection) {
+        if(index < 0 || index > size){
+            throw new IndexOutOfBoundsException();
+        }
+        int sizeBefore = size;
+
+        size += otherCollection.size();
+        extendArrayIfNeeded(size - 1);
+        int currentIndex = sizeBefore - 1;
+
+        for(; currentIndex >= index; currentIndex--) {
+            array[currentIndex + otherCollection.size()] = array[currentIndex];
+        }
+
+        currentIndex = index;
+        for(T currentElementOfOtherCollection : otherCollection) {
+            setElementOnIndex(currentIndex, currentElementOfOtherCollection);
+            currentIndex++;
+        }
+
+        return true;
+    }
+
+    public boolean addAll(Collection<? extends T> otherCollection) {
+        for (T currentElementOfOtherCollection : otherCollection) {
+            add(currentElementOfOtherCollection);
+        }
+        return true;
+    }
+
+    public boolean removeAll(Collection<?> otherCollection) {
+        for (Object currentElementOfOtherCollection : otherCollection) {
+            if (contains(currentElementOfOtherCollection)) {
+                remove(otherCollection);
+                return true;
+            }
+        }
         return false;
     }
 
-    public boolean containsAll(Collection<?> c) {
-        return false;
-    }
-
-    public boolean addAll(Collection<? extends T> c) {
-        return false;
-    }
-
-    public boolean addAll(int index, Collection<? extends T> c) {
-        return false;
-    }
-
-    public boolean removeAll(Collection<?> c) {
-        return false;
-    }
-
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(Collection<?> otherCollection) {
         return false;
     }
 
