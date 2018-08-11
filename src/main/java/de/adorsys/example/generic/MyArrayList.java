@@ -12,16 +12,11 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public T set(int index, T s) {
-        if (index > array.length - 1) {
-            T[] copiedArray = (T[]) new Object[array.length * 8];
-
-            System.arraycopy(array, 0, copiedArray, 0, array.length);
-
-            array = copiedArray;
+        if(index < 0 || index >= size){
+            throw new IndexOutOfBoundsException();
         }
 
-        array[index] = s;
-        return s;
+        return setElementOnIndex(index, s);
     }
 
     public void add(int index, T element) {
@@ -92,7 +87,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public boolean add(T s) {
-        set(size, s);
+        setElementOnIndex(size, s);
         size++;
 
         return true;
@@ -124,5 +119,24 @@ public class MyArrayList<T> implements List<T> {
 
     public void clear() {
 
+    }
+
+    private T setElementOnIndex(int index, T s) {
+        extendArrayIfNeeded(index);
+
+        T previous = array[index];
+        array[index] = s;
+
+        return previous;
+    }
+
+    private void extendArrayIfNeeded(int index) {
+        if (index > array.length - 1) {
+            T[] copiedArray = (T[]) new Object[array.length * 8];
+
+            System.arraycopy(array, 0, copiedArray, 0, array.length);
+
+            array = copiedArray;
+        }
     }
 }

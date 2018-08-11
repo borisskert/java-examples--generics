@@ -1,10 +1,9 @@
 package de.adorsys.example.generic;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -12,11 +11,11 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 public class MyArrayListTest {
 
-    private List<String> list;
+    private MyArrayList<String> list;
 
     @Before
     public void setup() throws Exception {
-        list = new MyArrayList<String>();
+        list = new MyArrayList<>();
     }
 
     @Test
@@ -45,22 +44,60 @@ public class MyArrayListTest {
     }
 
     @Test
-    public void shouldStoreOneString() throws Exception {
+    public void shouldAddOneString() throws Exception {
         list.add("abc");
         String string = list.get(0);
 
         assertThat(string, is(equalTo("abc")));
+        assertThat(list.size(), is(1));
+        assertThat(list.indexOf("abc"), is(equalTo(0)));
     }
 
     @Test
-    public void shouldHaveSizeOfOneAfterAddingOneElement() throws Exception {
-        list.add("abc");
-        assertThat(list.size(), is(1));
+    public void shouldNotSetFirstStringIfIndexIsNegative() throws Exception {
+        try {
+            list.set(-1, "abc");
+        } catch(IndexOutOfBoundsException e){
+            return;
+        }
+
+        Assert.fail("no IndexOutOfBoundsException thrown");
     }
+
     @Test
-    public void shouldContainElementAtIndexAfterAddingOneElement() throws Exception {
+    public void shouldNotSetFirstStringIfListIsEmpty() throws Exception {
+        try {
+            list.set(0, "abc");
+        } catch(IndexOutOfBoundsException e){
+            return;
+        }
+
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
+
+    @Test
+    public void shouldNotSetSecondStringIfListContainsOneElement() throws Exception {
         list.add("abc");
+
+        try {
+            list.set(1, "xyz");
+        } catch(IndexOutOfBoundsException e){
+            return;
+        }
+
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
+
+    @Test
+    public void shouldSetSecondString() throws Exception {
+        list.add("xyz");
+        String previous = list.set(0, "abc");
+        String string = list.get(0);
+
+        assertThat(previous, is(equalTo("xyz")));
+        assertThat(string, is(equalTo("abc")));
         assertThat(list.indexOf("abc"), is(equalTo(0)));
+        assertThat(list.indexOf("xyz"), is(equalTo(-1)));
     }
 
     @Test
