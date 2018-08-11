@@ -5,7 +5,7 @@ import net.jqwik.api.stateful.ActionSequence;
 
 class MyArrayListPropertiesTest {
 
-    @Property(reporting = Reporting.GENERATED)
+    @Property
     void test(@ForAll("sequences") ActionSequence<MyArrayList<String>> sequence) {
         sequence.run(new MyArrayList<>());
     }
