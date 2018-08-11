@@ -6,6 +6,8 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 import net.jqwik.api.stateful.Action;
 
+import java.util.Collection;
+
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -13,11 +15,15 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> actions() {
-        return Arbitraries.oneOf(add(), set());
+        return Arbitraries.oneOf(add(), addAll(), set());
     }
 
     static Arbitrary<Action<MyArrayList<String>>> add() {
         return Arbitraries.strings().alpha().numeric().map(AddAction::new);
+    }
+
+    static Arbitrary<Action<MyArrayList<String>>> addAll() {
+        return Arbitraries.strings().alpha().numeric().list().map(AddAllAction::new);
     }
 
     static Arbitrary<Action<MyArrayList<String>>> set() {
@@ -60,6 +66,34 @@ class MyArrayListActions {
             return "AddAction{" +
                     "element=" + elementAsText +
                     '}';
+        }
+    }
+
+    private static class AddAllAction<E> implements Action<MyArrayList<E>> {
+
+        private final Collection<E> elements;
+
+        private AddAllAction(Collection<E> elements) {
+            this.elements = elements;
+        }
+
+        @Override
+        public MyArrayList<E> run(MyArrayList<E> model) {
+            int sizeBefore = model.size();
+
+            model.addAll(elements);
+
+            int sizeAfter = model.size();
+
+            assertThat(sizeAfter).isEqualTo(sizeBefore + elements.size());
+
+            int index = sizeBefore;
+            for(E element : elements) {
+                assertThat(model.get(index)).isEqualTo(element);
+                index++;
+            }
+
+            return model;
         }
     }
 
