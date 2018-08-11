@@ -15,7 +15,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> actions() {
-        return Arbitraries.oneOf(add(), addAll(), set());
+        return Arbitraries.oneOf(add(), addAll(), set(), remove());
     }
 
     static Arbitrary<Action<MyArrayList<String>>> add() {
@@ -34,6 +34,10 @@ class MyArrayListActions {
                 .as(Tuple2::new)
                 .map(SetAction::new)
         ;
+    }
+
+    static Arbitrary<Action<MyArrayList<String>>> remove() {
+        return Arbitraries.strings().alpha().numeric().map(RemoveAction::new);
     }
 
     private static class AddAction<E> implements Action<MyArrayList<E>> {
@@ -152,6 +156,32 @@ class MyArrayListActions {
                     "index=" + index +
                     ", element=" + elementAsText +
                     '}';
+        }
+    }
+
+    private static class RemoveAction<E> implements Action<MyArrayList<E>> {
+
+        private final E element;
+
+        private RemoveAction(E element) {
+            this.element = element;
+        }
+
+        @Override
+        public MyArrayList<E> run(MyArrayList<E> model) {
+            boolean containsElement = model.contains(element);
+            int sizeBefore = model.size();
+
+            boolean gotRemoved = model.remove(element);
+
+            int sizeAfter = model.size();
+
+            assertThat(gotRemoved).isEqualTo(containsElement);
+            assertThat(sizeAfter).isEqualTo(sizeBefore - (containsElement ? 1 : 0));
+            assertThat(model.contains(element)).isEqualTo(false);
+            assertThat(model.indexOf(element)).isEqualTo(-1);
+
+            return model;
         }
     }
 }
