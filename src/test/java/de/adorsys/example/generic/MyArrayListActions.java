@@ -10,7 +10,7 @@ import java.util.Collection;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class MyArrayListActions {
 
@@ -67,9 +67,9 @@ class MyArrayListActions {
         public String toString() {
             String elementAsText = element == null ? "null" : element.toString();
 
-            return "AddAction{" +
-                    "element=" + elementAsText +
-                    '}';
+            return "add(" +
+                    elementAsText +
+                    ')';
         }
     }
 
@@ -152,10 +152,10 @@ class MyArrayListActions {
         public String toString() {
             String elementAsText = element == null ? "null" : element.toString();
 
-            return "SetAction{" +
-                    "index=" + index +
-                    ", element=" + elementAsText +
-                    '}';
+            return "set(" +
+                    index +
+                    ',' + elementAsText +
+                    ')';
         }
     }
 
@@ -182,6 +182,15 @@ class MyArrayListActions {
             assertThat(model.indexOf(element)).isEqualTo(-1);
 
             return model;
+        }
+
+        @Override
+        public String toString() {
+            String elementAsText = element == null ? "null" : element.toString();
+
+            return "remove(" +
+                    elementAsText +
+                    ')';
         }
     }
 }
