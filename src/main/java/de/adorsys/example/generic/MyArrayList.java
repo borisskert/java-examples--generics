@@ -24,7 +24,14 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public T remove(int index) {
-        return null;
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        T previous = array[index];
+        removeOnIndex(index);
+
+        return previous;
     }
 
     public int indexOf(Object o) {
@@ -94,12 +101,13 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public boolean remove(Object o) {
-        for (int i = 0; i < size; i++) {
-            if (!contains(o)) {
-                return false;
-            }
+        int index = indexOf(o);
+
+        if (index < 0) {
+            return false;
         }
-        size--;
+
+        removeOnIndex(index);
         return true;
     }
 
@@ -114,7 +122,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public boolean addAll(int index, Collection<? extends T> otherCollection) {
-        if(index < 0 || index > size){
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
         }
         int sizeBefore = size;
@@ -123,12 +131,12 @@ public class MyArrayList<T> implements List<T> {
         extendArrayIfNeeded(size - 1);
         int currentIndex = sizeBefore - 1;
 
-        for(; currentIndex >= index; currentIndex--) {
+        for (; currentIndex >= index; currentIndex--) {
             array[currentIndex + otherCollection.size()] = array[currentIndex];
         }
 
         currentIndex = index;
-        for(T currentElementOfOtherCollection : otherCollection) {
+        for (T currentElementOfOtherCollection : otherCollection) {
             setElementOnIndex(currentIndex, currentElementOfOtherCollection);
             currentIndex++;
         }
@@ -178,5 +186,15 @@ public class MyArrayList<T> implements List<T> {
 
             array = copiedArray;
         }
+    }
+
+    private void removeOnIndex(int index) {
+        size--;
+
+        for (; index < size; index++) {
+            array[index] = array[index + 1];
+        }
+
+        array[index] = null;
     }
 }

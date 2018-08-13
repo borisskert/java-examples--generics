@@ -453,26 +453,63 @@ public class MyArrayListTest {
     @Test
     public void shouldNotRemoveElementFromCollection() throws Exception {
         list.add("abc");
-        list.remove("xyz");
-        assertThat(list.remove("xyz"), is(equalTo(false)));
+        boolean gotRemoved = list.remove("xyz");
+        assertThat(gotRemoved, is(equalTo(false)));
+    }
+
+    @Test
+    public void shouldNotRemoveElementTwice() throws Exception {
+        list.add("abc");
+
+        list.remove("abc");
+        boolean gotRemoved = list.remove("abc");
+
+        assertThat(gotRemoved, is(equalTo(false)));
+        assertThat(list.size(), is(equalTo(0)));
     }
 
     @Test
     public void shouldRemoveElementFromCollection() throws Exception {
         list.add("abc");
-        list.remove("abc");
-        assertThat(list.remove("abc"), is(equalTo(true)));
+        boolean gotRemoved = list.remove("abc");
+        assertThat(gotRemoved, is(equalTo(true)));
+        assertThat(list.size(), is(equalTo(0)));
     }
 
     @Test
-    public void shouldRemoveElementFromLongerCollection() throws Exception {
+    public void shouldRemoveLastElementFromLongerCollection() throws Exception {
         list.add("abc");
         list.add("def");
         list.add("xyz");
         list.add("abc");
         list.add("def");
-        list.remove("def");
-        assertThat(list.remove("def"), is(equalTo(true)));
+
+        boolean gotRemoved = list.remove("def");
+
+        assertThat(gotRemoved, is(equalTo(true)));
+        assertThat(list.size(), is(equalTo(4)));
+        assertThat(list.get(0), is(equalTo("abc")));
+        assertThat(list.get(1), is(equalTo("xyz")));
+        assertThat(list.get(2), is(equalTo("abc")));
+        assertThat(list.get(3), is(equalTo("def")));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementFromLongerCollection() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("xyz");
+        list.add("abc");
+        list.add("def");
+
+        boolean gotRemoved = list.remove("abc");
+
+        assertThat(gotRemoved, is(equalTo(true)));
+        assertThat(list.size(), is(equalTo(4)));
+        assertThat(list.get(0), is(equalTo("def")));
+        assertThat(list.get(1), is(equalTo("xyz")));
+        assertThat(list.get(2), is(equalTo("abc")));
+        assertThat(list.get(3), is(equalTo("def")));
     }
 
     @Test
@@ -497,4 +534,59 @@ public class MyArrayListTest {
         list.removeAll(otherList);
         assertThat(list.removeAll(otherList), is(equalTo(true)));
     }
+
+    @Test
+    public void shouldNotRemoveByNegativeIndex() throws Exception {
+        try {
+            list.remove(-1);
+        } catch(IndexOutOfBoundsException e) {
+            return;
+        }
+
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
+
+    @Test
+    public void shouldNotRemoveByIndexGreaterThanSize() throws Exception {
+        try {
+            list.remove(1);
+        } catch(IndexOutOfBoundsException e) {
+            return;
+        }
+
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
+
+    @Test
+    public void shouldRemoveFirstElement() throws Exception {
+        list.add("abc");
+
+        String removedElement = list.remove(0);
+        assertThat(list.size(), is(equalTo(0)));
+        assertThat(removedElement, is(equalTo("abc")));
+    }
+
+    @Test
+    public void shouldRemoveFirstElementOfTwo() throws Exception {
+        list.add("abc");
+        list.add("def");
+
+        String removedElement = list.remove(0);
+        assertThat(list.size(), is(equalTo(1)));
+        assertThat(removedElement, is(equalTo("abc")));
+        assertThat(list.get(0), is(equalTo("def")));
+    }
+
+    @Test
+    public void shouldRemoveSecondElementOfTwo() throws Exception {
+        list.add("abc");
+        list.add("def");
+
+        String removedElement = list.remove(1);
+        assertThat(list.size(), is(equalTo(1)));
+        assertThat(removedElement, is(equalTo("def")));
+        assertThat(list.get(0), is(equalTo("abc")));
+    }
+
+
 }
