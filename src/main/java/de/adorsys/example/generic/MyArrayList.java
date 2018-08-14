@@ -20,7 +20,19 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public void add(int index, T element) {
+        if(index < 0 || index > size){
+            throw new IndexOutOfBoundsException();
+        }
 
+        extendArrayIfNeeded(size);
+
+        T previous = setElementOnIndex(index, element);
+        index++;
+        size++;
+
+        for (; index < size; index++) {
+           previous =  setElementOnIndex(index, previous);
+        }
     }
 
     public T remove(int index) {
@@ -61,6 +73,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public List<T> subList(int fromIndex, int toIndex) {
+        // TODO
         return null;
     }
 
@@ -86,10 +99,12 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public Object[] toArray() {
+        // TODO
         return new Object[0];
     }
 
     public <T1> T1[] toArray(T1[] a) {
+        // TODO
         return null;
     }
 
@@ -162,11 +177,23 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public boolean retainAll(Collection<?> otherCollection) {
-        return false;
+        boolean changed = false;
+        int index = 0;
+
+        while(index < size){
+            if(otherCollection.contains(array[index])){
+                index++;
+            } else {
+                removeOnIndex(index);
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     public void clear() {
-
+        size = 0;
+        array = (T[]) new Object[1];
     }
 
     private T setElementOnIndex(int index, T s) {

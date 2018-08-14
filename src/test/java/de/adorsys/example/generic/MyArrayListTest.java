@@ -536,6 +536,59 @@ public class MyArrayListTest {
     }
 
     @Test
+    public void shouldRetainAllElementsFromCollection() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+        list.add("abc");
+        list.add("xyz");
+
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+
+        assertThat(list.retainAll(otherList), is(equalTo(true)));
+        assertThat(list.size(), is(equalTo(2)));
+        assertThat(list.indexOf("abc"), is(equalTo(0)));
+        assertThat(list.lastIndexOf("abc"), is(equalTo(1)));
+    }
+
+    @Test
+    public void shouldNotChangeRetainAllElementsFromCollection() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+        list.add("xyz");
+        List<String> otherList = new ArrayList<>();
+        otherList.add("abc");
+        otherList.add("def");
+        otherList.add("ghi");
+        otherList.add("xyz");
+
+        boolean hasChanged = list.retainAll(otherList);
+
+        assertThat(hasChanged, is(equalTo(false)));
+        assertThat(list.size(), is(equalTo(4)));
+        assertThat(list.indexOf("abc"), is(equalTo(0)));
+        assertThat(list.indexOf("def"), is(equalTo(1)));
+        assertThat(list.indexOf("ghi"), is(equalTo(2)));
+        assertThat(list.indexOf("xyz"), is(equalTo(3)));
+    }
+
+    @Test
+    public void shouldDeleteWithRetainAllElementsWithEmptyCollection() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+        list.add("xyz");
+        List<String> otherList = new ArrayList<>();
+
+        boolean hasChanged = list.retainAll(otherList);
+
+        assertThat(hasChanged, is(equalTo(true)));
+        assertThat(list.size(), is(equalTo(0)));
+    }
+
+    @Test
     public void shouldNotRemoveByNegativeIndex() throws Exception {
         try {
             list.remove(-1);
@@ -588,5 +641,67 @@ public class MyArrayListTest {
         assertThat(list.get(0), is(equalTo("abc")));
     }
 
+    @Test
+    public void shouldBeEmptyAfterClear() throws Exception {
+        list.add("abc");
+        list.add("def");
+
+        list.clear();
+
+        assertThat(list.size(), is(0));
+        assertThat(list.isEmpty(), is(true));
+        assertThat(list.indexOf("abc"), is(equalTo(-1)));
+        assertThat(list.indexOf("def"), is(equalTo(-1)));
+
+    }
+
+    @Test
+    public void shouldAddElementAtIndex() throws Exception {
+        list.add("abc");
+        list.add(0, "def");
+
+        assertThat(list.size(), is(2));
+        assertThat(list.indexOf("def"), is(equalTo(0)));
+        assertThat(list.indexOf("abc"), is(equalTo(1)));
+    }
+    @Test
+    public void shouldAddElementAtLastIndex() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add(2, "xyz");
+
+        assertThat(list.size(), is(3));
+        assertThat(list.indexOf("abc"), is(equalTo(0)));
+        assertThat(list.indexOf("def"), is(equalTo(1)));
+        assertThat(list.indexOf("xyz"), is(equalTo(2)));
+    }
+
+    @Test
+    public void shouldNotAddElementWithNegativeIndex() throws Exception {
+        list.add("abc");
+        list.add("def");
+
+        try {
+            list.add(-1, "xyz");
+        }
+        catch (IndexOutOfBoundsException e){
+            return;
+        }
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
+
+    @Test
+    public void shouldNotAddElementByIndexGreaterSize() throws Exception {
+        list.add("abc");
+        list.add("def");
+
+        try {
+            list.add(3, "xyz");
+        }
+        catch (IndexOutOfBoundsException e){
+            return;
+        }
+        Assert.fail("no IndexOutOfBoundsException thrown");
+    }
 
 }
