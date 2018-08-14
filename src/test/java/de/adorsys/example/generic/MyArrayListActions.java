@@ -7,6 +7,7 @@ import net.jqwik.api.Combinators;
 import net.jqwik.api.stateful.Action;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.StringJoiner;
 
 import static com.googlecode.catchexception.CatchException.catchException;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> actions() {
-        return Arbitraries.oneOf(add(), addAll(), set(), remove());
+        return Arbitraries.oneOf(add(), addAll(), allAllByIndex(), set(), remove());
     }
 
     static Arbitrary<Action<MyArrayList<String>>> add() {
@@ -25,6 +26,16 @@ class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> addAll() {
         return Arbitraries.strings().alpha().numeric().list().map(AddAllAction::new);
+    }
+
+    static Arbitrary<Action<MyArrayList<String>>> allAllByIndex() {
+        Arbitrary<Integer> integers = Arbitraries.integers();
+        Arbitrary<List<String>> strings = Arbitraries.strings().alpha().numeric().list();
+
+        return Combinators.combine(integers, strings)
+                .as(Tuple2::new)
+                .map(AddAllByIndexAction::new)
+        ;
     }
 
     static Arbitrary<Action<MyArrayList<String>>> set() {
@@ -59,7 +70,6 @@ class MyArrayListActions {
             assertThat(isAdded).isTrue();
             assertThat(sizeAfter).isEqualTo(sizeBefore + 1);
             assertThat(model.get(sizeBefore)).isEqualTo(element);
-            assertThat(model.size()).isEqualTo(sizeBefore + 1);
 
             return model;
         }
@@ -167,6 +177,68 @@ class MyArrayListActions {
                     index +
                     ',' + elementAsText +
                     ')';
+        }
+    }
+
+    private static class AddAllByIndexAction<E> implements Action<MyArrayList<E>> {
+
+        private final Integer index;
+        private final Collection<E> elements;
+
+        private AddAllByIndexAction(Integer index, Collection<E> elements) {
+            this.index = index;
+            this.elements = elements;
+        }
+
+        AddAllByIndexAction(Tuple2<Integer, List<E>> tuple) {
+            this.index = tuple._1();
+            this.elements = tuple._2();
+        }
+
+        @Override
+        public MyArrayList<E> run(MyArrayList<E> model) {
+            int sizeBefore = model.size();
+
+            if (index < 0) {
+                testWithInvalidIndex(model);
+            } else if (index > sizeBefore) {
+                testWithInvalidIndex(model);
+            } else {
+                testSuccessful(model, sizeBefore);
+            }
+
+            return model;
+        }
+
+        private void testSuccessful(MyArrayList<E> model, int sizeBefore) {
+            model.addAll(index, elements);
+
+            int sizeAfter = model.size();
+
+            assertThat(sizeAfter).isEqualTo(sizeBefore + elements.size());
+
+            int currentIndex = index;
+            for(E element : elements) {
+                assertThat(model.get(currentIndex)).isEqualTo(element);
+                currentIndex++;
+            }
+        }
+
+        private void testWithInvalidIndex(MyArrayList<E> model) {
+            catchException(model).addAll(index, elements);
+            assertThat((Throwable) caughtException()).isInstanceOf(IndexOutOfBoundsException.class);
+        }
+
+        @Override
+        public String toString() {
+            StringJoiner joiner = new StringJoiner(",");
+            elements.forEach(s -> joiner.add(s.toString()));
+
+            return "addAll(" +
+                    index +
+                    ", [" +
+                    joiner.toString() +
+                    "])";
         }
     }
 
