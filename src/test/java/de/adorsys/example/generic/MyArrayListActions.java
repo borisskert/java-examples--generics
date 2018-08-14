@@ -7,6 +7,7 @@ import net.jqwik.api.Combinators;
 import net.jqwik.api.stateful.Action;
 
 import java.util.Collection;
+import java.util.StringJoiner;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
@@ -99,6 +100,16 @@ class MyArrayListActions {
 
             return model;
         }
+
+        @Override
+        public String toString() {
+            StringJoiner joiner = new StringJoiner(",");
+            elements.forEach(s -> joiner.add(s.toString()));
+
+            return "addAll([" +
+                    joiner.toString() +
+                    "])";
+        }
     }
 
     private static class SetAction<E> implements Action<MyArrayList<E>> {
@@ -178,8 +189,6 @@ class MyArrayListActions {
 
             assertThat(gotRemoved).isEqualTo(containsElement);
             assertThat(sizeAfter).isEqualTo(sizeBefore - (containsElement ? 1 : 0));
-            assertThat(model.contains(element)).isEqualTo(false);
-            assertThat(model.indexOf(element)).isEqualTo(-1);
 
             return model;
         }
