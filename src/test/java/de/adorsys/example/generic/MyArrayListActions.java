@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> actions() {
-        return Arbitraries.oneOf(add(), addAll(), allAllByIndex(), set(), remove());
+        return Arbitraries.oneOf(add(), addAll(), set(), remove(), clear());
     }
 
     static Arbitrary<Action<MyArrayList<String>>> add() {
@@ -52,6 +52,10 @@ class MyArrayListActions {
         return Arbitraries.strings().alpha().numeric().map(RemoveAction::new);
     }
 
+    static Arbitrary<Action<MyArrayList<String>>> clear() {
+        return Arbitraries.constant(new ClearAction<>());
+    }
+
     private static class AddAction<E> implements Action<MyArrayList<E>> {
 
         private final E element;
@@ -76,7 +80,7 @@ class MyArrayListActions {
 
         @Override
         public String toString() {
-            String elementAsText = element == null ? "null" : element.toString();
+            String elementAsText = element == null ? "null" : "\"" + element.toString() + "\"";
 
             return "add(" +
                     elementAsText +
@@ -114,7 +118,7 @@ class MyArrayListActions {
         @Override
         public String toString() {
             StringJoiner joiner = new StringJoiner(",");
-            elements.forEach(s -> joiner.add(s.toString()));
+            elements.forEach(s -> joiner.add("\"" + s.toString() + "\""));
 
             return "addAll([" +
                     joiner.toString() +
@@ -171,7 +175,7 @@ class MyArrayListActions {
 
         @Override
         public String toString() {
-            String elementAsText = element == null ? "null" : element.toString();
+            String elementAsText = element == null ? "null" : "\"" + element.toString() + "\"";
 
             return "set(" +
                     index +
@@ -232,7 +236,7 @@ class MyArrayListActions {
         @Override
         public String toString() {
             StringJoiner joiner = new StringJoiner(",");
-            elements.forEach(s -> joiner.add(s.toString()));
+            elements.forEach(s -> joiner.add("\"" + s.toString() + "\""));
 
             return "addAll(" +
                     index +
@@ -267,11 +271,29 @@ class MyArrayListActions {
 
         @Override
         public String toString() {
-            String elementAsText = element == null ? "null" : element.toString();
+            String elementAsText = element == null ? "null" : "\"" + element.toString() + "\"";
 
             return "remove(" +
                     elementAsText +
                     ')';
+        }
+    }
+
+    private static class ClearAction<E> implements Action<MyArrayList<E>> {
+
+        @Override
+        public MyArrayList<E> run(MyArrayList<E> model) {
+            model.clear();
+
+            assertThat(model.size()).isEqualTo(0);
+            assertThat(model.isEmpty()).isEqualTo(true);
+
+            return model;
+        }
+
+        @Override
+        public String toString() {
+            return "clear()";
         }
     }
 }
