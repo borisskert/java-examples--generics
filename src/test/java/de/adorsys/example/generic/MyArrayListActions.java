@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> actions() {
-        return Arbitraries.oneOf(add(), addAll(), set(), remove(), clear());
+        return Arbitraries.oneOf(add(), addAll(), set(), remove(), removeByIndex(), clear());
     }
 
     static Arbitrary<Action<MyArrayList<String>>> add() {
@@ -50,6 +50,10 @@ class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> remove() {
         return Arbitraries.strings().alpha().numeric().map(RemoveAction::new);
+    }
+
+    static Arbitrary<Action<MyArrayList<String>>> removeByIndex() {
+        return Arbitraries.integers().map(RemoveByIndex::new);
     }
 
     static Arbitrary<Action<MyArrayList<String>>> clear() {
@@ -275,6 +279,52 @@ class MyArrayListActions {
 
             return "remove(" +
                     elementAsText +
+                    ')';
+        }
+    }
+
+    private static class RemoveByIndex<E> implements Action<MyArrayList<E>> {
+
+        private final Integer index;
+
+        private RemoveByIndex(Integer index) {
+            this.index = index;
+        }
+
+        @Override
+        public MyArrayList<E> run(MyArrayList<E> model) {
+            if(index < 0) {
+                testFail(model);
+            } else if(index >= model.size()) {
+                testFail(model);
+            } else {
+                testSuccess(model);
+            }
+
+            return model;
+        }
+
+        private void testFail(MyArrayList<E> model) {
+            catchException(model).remove(index.intValue());
+            assertThat((Throwable) caughtException()).isInstanceOf(IndexOutOfBoundsException.class);
+        }
+
+        private void testSuccess(MyArrayList<E> model) {
+            int sizeBefore = model.size();
+            E elementToBeRemoved = model.get(index);
+
+            E removedElement = model.remove(index.intValue());
+
+            int sizeAfter = model.size();
+
+            assertThat(removedElement).isEqualTo(elementToBeRemoved);
+            assertThat(sizeAfter).isEqualTo(sizeBefore - 1);
+        }
+
+        @Override
+        public String toString() {
+            return "remove(" +
+                    index +
                     ')';
         }
     }
