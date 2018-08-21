@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> actions() {
-        return Arbitraries.oneOf(add(), addAll(), set(), remove(), removeByIndex(), clear());
+        return Arbitraries.oneOf(add(), addAll(), set(), remove(), removeByIndex(), clear(), retainAll());
     }
 
     static Arbitrary<Action<MyArrayList<String>>> add() {
@@ -26,6 +26,10 @@ class MyArrayListActions {
 
     static Arbitrary<Action<MyArrayList<String>>> addAll() {
         return Arbitraries.strings().alpha().numeric().list().map(AddAllAction::new);
+    }
+
+    static Arbitrary<Action<MyArrayList<String>>> retainAll() {
+        return Arbitraries.strings().alpha().numeric().list().map(RetainAll::new);
     }
 
     static Arbitrary<Action<MyArrayList<String>>> allAllByIndex() {
@@ -344,6 +348,73 @@ class MyArrayListActions {
         @Override
         public String toString() {
             return "clear()";
+        }
+    }
+
+    private static class RetainAll<E> implements Action<MyArrayList<E>> {
+
+        private final Collection<E> elements;
+
+        private RetainAll(Collection<E> elements) {
+            this.elements = elements;
+        }
+
+        @Override
+        public MyArrayList<E> run(MyArrayList<E> model) {
+            boolean elementsContainsAllOfModel = elementsContainsAllOf(model);
+            boolean modelContainsAllOfElements = model.containsAll(elements);
+            int sizeBefore = model.size();
+
+            boolean hasChanged = model.retainAll(elements);
+
+            if(elementsContainsAllOfModel && modelContainsAllOfElements) {
+                assertThat(hasChanged).isEqualTo(false);
+                assertThat(model.size()).isEqualTo(sizeBefore);
+            } else if(elementsContainsAllOfModel) {
+                assertThat(hasChanged).isEqualTo(false);
+                assertThat(model.size()).isEqualTo(sizeBefore);
+            } else {
+                assertThat(hasChanged).isEqualTo(true);
+                assertThat(model.size()).isLessThan(sizeBefore);
+            }
+
+            checkIfModelContainsOnlyElements(model);
+
+            return model;
+        }
+
+        private void checkIfModelContainsOnlyElements(MyArrayList<E> model) {
+            // TODO refactor when iterator is implemented
+            for(int index = 0; index < model.size(); index++) {
+                E elementInModel = model.get(index);
+                assertThat(elements.contains(elementInModel)).isTrue();
+            }
+
+//            assertThat(elements.containsAll(model)).isTrue();
+        }
+
+        // TODO refactor when iterator is implemented
+        private boolean elementsContainsAllOf(MyArrayList<E> model) {
+            for(int index = 0; index < model.size(); index++) {
+                E elementInModel = model.get(index);
+
+                if(!elements.contains(elementInModel)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            StringJoiner joiner = new StringJoiner(",");
+            elements.forEach(s -> joiner.add("\"" + s.toString() + "\""));
+
+            return "retainAll(" +
+                    "[" +
+                    joiner.toString() +
+                    "])";
         }
     }
 }
