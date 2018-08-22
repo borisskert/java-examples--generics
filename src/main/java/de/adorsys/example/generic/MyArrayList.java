@@ -1,5 +1,6 @@
 package de.adorsys.example.generic;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MyArrayList<T> implements List<T> {
@@ -107,7 +108,6 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public Object[] toArray() {
-
         Object[] newArray = new Object[size];
         System.arraycopy(array, 0, newArray, 0, size);
 
@@ -115,8 +115,16 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public <T1> T1[] toArray(T1[] a) {
-        // TODO
-        return null;
+        if(size > a.length) {
+            T1[] newArray = (T1[]) Array.newInstance(a.getClass().getComponentType(), size);
+            System.arraycopy(array, 0, newArray, 0, size);
+
+            return newArray;
+        }
+
+        System.arraycopy(array, 0, a, 0, size);
+
+        return a;
     }
 
     public boolean add(T s) {

@@ -1,5 +1,6 @@
 package de.adorsys.example.generic;
 
+import com.sun.xml.internal.fastinfoset.util.StringArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -12,6 +13,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsSame.sameInstance;
 
 public class MyArrayListTest {
 
@@ -820,14 +822,14 @@ public class MyArrayListTest {
 
 
     @Test
-    public void shouldDisplayEmptyArrayOfList() throws Exception {
+    public void shouldConvertEmptyArrayListToArray() throws Exception {
         Object[] objectsAsArray = list.toArray();
 
         assertThat(objectsAsArray.length, is(equalTo(0)));
     }
 
     @Test
-    public void shouldDisplayArrayOfList() throws Exception {
+    public void shouldConvertFilledArrayListToArray() throws Exception {
         list.add("abc");
         list.add("def");
         list.add("ghi");
@@ -838,6 +840,50 @@ public class MyArrayListTest {
         assertThat(objectsAsArray[1], is(equalTo("def")));
         assertThat(objectsAsArray[2], is(equalTo("ghi")));
         assertThat(objectsAsArray.length, is(equalTo(3)));
+    }
+
+    @Test
+    public void shouldConvertEmptyArrayListToTypedArray() throws Exception {
+        String[] newArray = new String[0];
+        String[] objectsAsArray = list.toArray(newArray);
+
+        assertThat(objectsAsArray.length, is(equalTo(0)));
+    }
+
+    @Test
+    public void shouldConvertFilledArrayListToTypedArray() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+
+        String[] newArray = new String[0];
+        String[] objectsAsArray = list.toArray(newArray);
+
+        assertThat(objectsAsArray[0], is(equalTo("abc")));
+        assertThat(objectsAsArray[1], is(equalTo("def")));
+        assertThat(objectsAsArray[2], is(equalTo("ghi")));
+        assertThat(objectsAsArray.length, is(equalTo(3)));
+    }
+
+    @Test
+    public void shouldConvertArrayListToTypedArray() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+
+        String[] newArray = new String[3];
+        String[] objectsAsArray = list.toArray(newArray);
+
+        assertThat(objectsAsArray[0], is(equalTo("abc")));
+        assertThat(objectsAsArray[1], is(equalTo("def")));
+        assertThat(objectsAsArray[2], is(equalTo("ghi")));
+        assertThat(objectsAsArray.length, is(equalTo(3)));
+
+        assertThat(newArray[0], is(equalTo("abc")));
+        assertThat(newArray[1], is(equalTo("def")));
+        assertThat(newArray[2], is(equalTo("ghi")));
+        assertThat(newArray.length, is(equalTo(3)));
+        assertThat(objectsAsArray, is(sameInstance(newArray)));
     }
 
 }
