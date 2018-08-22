@@ -104,7 +104,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public Iterator<T> iterator() {
-        return null;
+        return new MyArrayListIterator<>(this);
     }
 
     public Object[] toArray() {
