@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -818,5 +819,25 @@ public class MyArrayListTest {
     }
 
 
+    @Test
+    public void shouldDisplayEmptyArrayOfList() throws Exception {
+        Object[] objectsAsArray = list.toArray();
+
+        assertThat(objectsAsArray.length, is(equalTo(0)));
+    }
+
+    @Test
+    public void shouldDisplayArrayOfList() throws Exception {
+        list.add("abc");
+        list.add("def");
+        list.add("ghi");
+
+        Object[] objectsAsArray = list.toArray();
+
+        assertThat(objectsAsArray[0], is(equalTo("abc")));
+        assertThat(objectsAsArray[1], is(equalTo("def")));
+        assertThat(objectsAsArray[2], is(equalTo("ghi")));
+        assertThat(objectsAsArray.length, is(equalTo(3)));
+    }
 
 }

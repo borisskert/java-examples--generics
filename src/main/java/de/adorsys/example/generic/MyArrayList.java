@@ -107,8 +107,11 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public Object[] toArray() {
-        // TODO
-        return new Object[0];
+
+        Object[] newArray = new Object[size];
+        System.arraycopy(array, 0, newArray, 0, size);
+
+        return newArray;
     }
 
     public <T1> T1[] toArray(T1[] a) {
