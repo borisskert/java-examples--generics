@@ -361,7 +361,7 @@ class MyArrayListActions {
 
         @Override
         public MyArrayList<E> run(MyArrayList<E> model) {
-            boolean elementsContainsAllOfModel = elementsContainsAllOf(model);
+            boolean elementsContainsAllOfModel = elements.containsAll(model);
             boolean modelContainsAllOfElements = model.containsAll(elements);
             int sizeBefore = model.size();
 
@@ -378,32 +378,9 @@ class MyArrayListActions {
                 assertThat(model.size()).isLessThan(sizeBefore);
             }
 
-            checkIfModelContainsOnlyElements(model);
+            assertThat(elements.containsAll(model)).isTrue();
 
             return model;
-        }
-
-        private void checkIfModelContainsOnlyElements(MyArrayList<E> model) {
-            // TODO refactor when iterator is implemented
-            for(int index = 0; index < model.size(); index++) {
-                E elementInModel = model.get(index);
-                assertThat(elements.contains(elementInModel)).isTrue();
-            }
-
-//            assertThat(elements.containsAll(model)).isTrue();
-        }
-
-        // TODO refactor when iterator is implemented
-        private boolean elementsContainsAllOf(MyArrayList<E> model) {
-            for(int index = 0; index < model.size(); index++) {
-                E elementInModel = model.get(index);
-
-                if(!elements.contains(elementInModel)) {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         @Override
