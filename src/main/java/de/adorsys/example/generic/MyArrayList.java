@@ -21,7 +21,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public void add(int index, T element) {
-        if(index < 0 || index > size){
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -32,7 +32,7 @@ public class MyArrayList<T> implements List<T> {
         size++;
 
         for (; index < size; index++) {
-           previous =  setElementOnIndex(index, previous);
+            previous = setElementOnIndex(index, previous);
         }
     }
 
@@ -74,13 +74,13 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public List<T> subList(int fromIndex, int toIndex) {
-        if(fromIndex < 0 || toIndex > size || fromIndex > toIndex){
+        if (fromIndex < 0 || toIndex > size || fromIndex > toIndex) {
             throw new IndexOutOfBoundsException();
         }
 
         MyArrayList<T> myArrayList = new MyArrayList<>();
-        for(; fromIndex < toIndex; fromIndex++){
-           myArrayList.add(array[fromIndex]);
+        for (; fromIndex < toIndex; fromIndex++) {
+            myArrayList.add(array[fromIndex]);
         }
 
         return myArrayList;
@@ -115,7 +115,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public <T1> T1[] toArray(T1[] a) {
-        if(size > a.length) {
+        if (size > a.length) {
             T1[] newArray = (T1[]) Array.newInstance(a.getClass().getComponentType(), size);
             System.arraycopy(array, 0, newArray, 0, size);
 
@@ -199,8 +199,8 @@ public class MyArrayList<T> implements List<T> {
         boolean changed = false;
         int index = 0;
 
-        while(index < size){
-            if(otherCollection.contains(array[index])){
+        while (index < size) {
+            if (otherCollection.contains(array[index])) {
                 index++;
             } else {
                 removeOnIndex(index);
@@ -258,5 +258,26 @@ public class MyArrayList<T> implements List<T> {
         }
 
         array[index] = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof List){
+            List<T> otherList = (List<T>) o;
+
+            if (this.size != otherList.size()) {
+                return false;
+            }
+
+            for (int i = 0; i < size; i++) {
+                if (!array[i].equals(otherList.get(i))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

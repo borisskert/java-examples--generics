@@ -886,4 +886,56 @@ public class MyArrayListTest {
         assertThat(objectsAsArray, is(sameInstance(newArray)));
     }
 
+    @Test
+    public void shouldEqualsSameArrayList() throws Exception {
+        MyArrayList<String> other = list;
+        assertThat(list.equals(other), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldNotEqualsString() throws Exception {
+        assertThat(list.equals("bla"), is(equalTo(false)));
+    }
+
+    @Test
+    public void shouldNotEqualsSimpleObject() throws Exception {
+        assertThat(list.equals(new Object()), is(equalTo(false)));
+    }
+
+    @Test
+    public void shouldEqualsEmptyOtherArrayList() throws Exception {
+        MyArrayList<String> other = new MyArrayList<>();
+        assertThat(list.equals(other), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldEqualsOtherArrayList() throws Exception {
+        MyArrayList<String> other = new MyArrayList<>();
+        list.add("abc");
+        list.add("def");
+        other.add("abc");
+        other.add("def");
+
+        assertThat(list.equals(other), is(equalTo(true)));
+    }
+
+    @Test
+    public void shouldNotEqualsOtherFilledArrayListIfEmpty() throws Exception {
+        MyArrayList<String> other = new MyArrayList<>();
+        other.add("abc");
+        other.add("def");
+
+        assertThat(list.equals(other), is(equalTo(false)));
+    }
+
+    @Test
+    public void shouldEqualsOtherList() throws Exception {
+        List<String> other = new ArrayList<>();
+        list.add("abc");
+        list.add("def");
+        other.add("abc");
+        other.add("def");
+
+        assertThat(list.equals(other), is(equalTo(true)));
+    }
 }
