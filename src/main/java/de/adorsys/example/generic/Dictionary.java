@@ -6,23 +6,27 @@ public class Dictionary<K, V> implements Map<K, V> {
 
     private final List<DictionaryEntry<K, V>> entries = new MyArrayList<>();
 
-
-    public V get(int index) {
-        DictionaryEntry<K, V> entry = entries.get(index);
-        return entry.value;
-    }
-
     public int size() {
         return entries.size();
     }
 
     @Override
     public boolean isEmpty() {
+        if(entries.isEmpty()){
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean containsKey(Object key) {
+        for(int i = 0; i < entries.size(); i++) {
+            DictionaryEntry<K, V> entry = entries.get(i);
+
+            if(entry.key.equals(key)){
+                return true;
+            }
+        }
         return false;
     }
 
